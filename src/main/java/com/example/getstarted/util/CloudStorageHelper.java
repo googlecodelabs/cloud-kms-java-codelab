@@ -68,7 +68,7 @@ public class CloudStorageHelper {
 		try {
 
 			Map<String, String> metadataMap = new HashMap<String, String>();
-			metadataMap.put("wDEK", String.valueOf(kmsHelper.encodeSecretKey(wDEK)));
+			metadataMap.put("wDEK", new String(kmsHelper.encodeSecretKey(wDEK), "utf-8"));
 
 			BlobId blobId = BlobId.of(bucketName, fileName);
 			BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(filePart.getContentType())
