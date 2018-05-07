@@ -1,0 +1,30 @@
+
+# Eclipse files
+.project
+.classpath
+.settings
+
+# IntelliJ IDEA
+.Idea
+*.iml
+.idea/
+
+# Target folders
+target/
+build/
+out/
+
+## Vim ##
+# swap
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
+# session
+Session.vim
+# temporary
+.netrwhist
+*~
+# auto-generated tag files
+tags
+
+## Secrets ##
+client-secret.json
