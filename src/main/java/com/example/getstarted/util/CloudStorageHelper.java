@@ -66,15 +66,21 @@ public class CloudStorageHelper {
 		final String fileName = filePart.getSubmittedFileName() + dtString;
 
 		try {
-
-			Map<String, String> metadataMap = new HashMap<String, String>();
-			metadataMap.put("wDEK", new String(kmsHelper.encodeSecretKey(wDEK), "utf-8"));
-
 			BlobId blobId = BlobId.of(bucketName, fileName);
+			Map<String, String> metadataMap = new HashMap<String, String>();
+			if (false) {
+				metadataMap.put("wDEK", new String(kmsHelper.encodeSecretKey(wDEK), "utf-8"));
+			}
+
 			BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(filePart.getContentType())
 					.setMetadata(metadataMap).build();
-			BlobWriteOption blobWriteOpts = BlobWriteOption.encryptionKey(DEK);
-			Blob blob = storage.create(blobInfo, filePart.getInputStream(), blobWriteOpts);
+			if (false) {
+				BlobWriteOption blobWriteOpts = BlobWriteOption.encryptionKey(DEK);
+			} else {
+				//BlobWriteOption blobWriteOpts = null;
+			}
+			//Blob blob = storage.create(blobInfo, filePart.getInputStream(), blobWriteOpts);
+			Blob blob = storage.create(blobInfo, filePart.getInputStream());
 
 			return blob.getMediaLink();
 		} catch (Exception e) {
@@ -108,17 +114,22 @@ public class CloudStorageHelper {
 			final String projectId, final String keyRingName, final String keyRingLocation, final String keyName)
 			throws IOException, ServletException {
 		try {
-			// Init a Cloud KMS helper
-			CloudKeyManagementServiceHelper kmsHelper = new CloudKeyManagementServiceHelper(projectId, keyRingName,
-					keyRingLocation, keyName);
+			CloudKeyManagementServiceHelper kmsHelper = null;
+			SecretKey DEK = null;
+			SecretKey wDEK = null;
+			if (false) {
+				// Init a Cloud KMS helper
+				kmsHelper = new CloudKeyManagementServiceHelper(projectId, keyRingName,
+						keyRingLocation, keyName);
 
-			// Generate a new Data Encryption Key (DEK)
-			SecretKey DEK = kmsHelper.generateDataEncryptionKey();
+				// Generate a new Data Encryption Key (DEK)
+				DEK = kmsHelper.generateDataEncryptionKey();
 
-			// Ask Google Cloud Key Management Service (KMS)
-			// to wrap (encrypt) the Data Encryption Key
-			// returning a wrapped-DEK (wDEK)
-			SecretKey wDEK = kmsHelper.wrapDataEncryptionKey(DEK);
+				// Ask Google Cloud Key Management Service (KMS)
+				// to wrap (encrypt) the Data Encryption Key
+				// returning a wrapped-DEK (wDEK)
+				wDEK = kmsHelper.wrapDataEncryptionKey(DEK);
+			}
 
 			Part filePart = req.getPart("file");
 			final String fileName = filePart.getSubmittedFileName();
